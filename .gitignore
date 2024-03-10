@@ -277,3 +277,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+reactjs/next-env.d.ts
+reactjs/public/
