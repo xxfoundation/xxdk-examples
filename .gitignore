@@ -280,3 +280,5 @@ dist
 
 reactjs/next-env.d.ts
 reactjs/public/
+
+*~
