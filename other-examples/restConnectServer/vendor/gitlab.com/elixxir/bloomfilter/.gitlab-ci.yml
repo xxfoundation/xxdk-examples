@@ -1,0 +1,55 @@
+before_script:
+  - go version || echo "Go executable not found."
+  - echo $CI_BUILD_REF
+  - echo $CI_PROJECT_DIR
+  - echo $PWD
+
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan -t rsa gitlab.com > ~/.ssh/known_hosts
+  - git config --global url."git@$GITLAB_SERVER:".insteadOf "https://gitlab.com/"
+  - git config --global url."git@$GITLAB_SERVER:".insteadOf "https://git.xx.network/" --add
+
+  - export PATH=$HOME/go/bin:$PATH
+
+stages:
+  - build
+  - trigger_integration
+
+build:
+  stage: build
+  image: $DOCKER_IMAGE
+  script:
+    - git clean -ffdx
+    - go mod vendor -v
+    - go build ./...
+    - go mod tidy
+    - mkdir -p testdata
+    # Test coverage
+    - go-acc --covermode atomic --output testdata/coverage.out ./... -- -v
+    - grep -v mixmessages\.pb\.go testdata/coverage.out | grep -v gateway\.go | grep -v -e testkeys | grep -v node\.go > testdata/coverage-real.out
+    - go tool cover -func=testdata/coverage-real.out
+    - go tool cover -html=testdata/coverage-real.out -o testdata/coverage.html
+
+    # Test Coverage Check
+    - go tool cover -func=testdata/coverage-real.out | grep "total:" | awk '{print $3}' | sed 's/\%//g' > testdata/coverage-percentage.txt
+    - export CODE_CHECK=$(echo "$(cat testdata/coverage-percentage.txt) >= $MIN_CODE_COVERAGE" | bc -l)
+    - (if [ "$CODE_CHECK" == "1" ]; then echo "Minimum coverage of $MIN_CODE_COVERAGE succeeded"; else echo "Minimum coverage of $MIN_CODE_COVERAGE failed"; exit 1; fi);
+    - mkdir -p release
+    - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags '-w -s' ./...
+    - cd release
+  artifacts:
+    paths:
+      - vendor/
+      - testdata/
+      - release/
+
+trigger-integration:
+  stage: trigger_integration
+  trigger:
+    project: elixxir/integration
+    branch: $CI_COMMIT_REF_NAME
+  only:
+    - master
