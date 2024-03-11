@@ -1,0 +1,10 @@
+# xxdk is built for this version of iOS or higher.
+platform :ios, '17.0'
+
+# This is required for swift since it does not support static libraries.
+use_frameworks!
+
+target 'iOSExample' do
+  pod 'XXDK'
+  pod 'Kronos'
+end

@@ -1,0 +1,20 @@
+PODS:
+  - Kronos (4.2.2)
+  - XXDK (4.7.2)
+
+DEPENDENCIES:
+  - Kronos
+  - XXDK
+
+SPEC REPOS:
+  trunk:
+    - Kronos
+    - XXDK
+
+SPEC CHECKSUMS:
+  Kronos: dfa27819541f9f1bf6834d5bfefa792f499001bb
+  XXDK: 37bfcd6f9d9a78bd259c73f70ec4746228fb111a
+
+PODFILE CHECKSUM: d7aeab7b106181f18ef4093763c23b0e36740219
+
+COCOAPODS: 1.15.2
