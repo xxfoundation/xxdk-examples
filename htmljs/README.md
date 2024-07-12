@@ -27,3 +27,7 @@ We extracted the code from the reactjs example for the design. Then we
 added the necessary `<script>` tags. In particular, we added `Dexie`
 for indexedDB and `base64js` to handle base64 to Uint8Array
 conversions.
+
+## RPC
+
+See `rpc.html` for an example using the rpc module.
