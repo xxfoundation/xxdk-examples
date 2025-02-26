@@ -56,7 +56,7 @@ https://forum.xx.network/
 
 You can find us on Discord here:
 
-https://discord.gg/d9SHXS4V
+https://discord.com/invite/kbS4dSrPCv
 
 ## Contributing
 
